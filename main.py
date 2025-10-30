@@ -18,7 +18,6 @@ window.geometry("700x600+1200+0")
 window.title("USAF mission planner")
 window.resizable(False, False)
 
-# ✅ Set PNG icon after window is created
 icon_tk = tk.PhotoImage(file="icon.png")
 window.iconphoto(False, icon_tk)
 
@@ -102,5 +101,6 @@ def flight_plan_visualizer():
 flight_plan_visualizer()
 tabs_holder = c.CTkScrollbar(window, fg_color="#323290", corner_radius=20, height=40, width=680, bg_color="#416690")
 tabs_holder.place(x=10, y=5)
+
 
 window.mainloop()
