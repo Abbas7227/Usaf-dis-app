@@ -187,8 +187,82 @@ def flight_plan_visualizer():
 def flight_planner_tab():
     planner = c.CTkFrame(window, width=700, height=550, fg_color=BG_DARK, corner_radius=0)
     tab_frames["Flight Planner"] = planner
-    c.CTkLabel(planner, text="Flight Planner Tools Coming Soon", text_color=TEXT,
-               font=("Segoe UI", 18, "bold")).place(x=180, y=250)
+
+    font_small = ("Segoe UI", 13)
+    font_label = ("Segoe UI", 12, "bold")
+    entry_h = 35
+
+    # --- Section 1: Flight Info Box ---
+    info_box = c.CTkFrame(planner, width=640, height=190, fg_color=BG_MID,corner_radius=15, border_width=1, border_color=ACCENT)
+    info_box.place(x=30, y=20)
+
+    c.CTkLabel(info_box, text="Flight Information", text_color="#9aa0b3",font=font_label).place(x=25, y=5)
+
+    call_sign = c.CTkEntry(info_box, placeholder_text="Call Sign", width=200, height=entry_h,fg_color=BG_LIGHT, border_color=ACCENT, border_width=1,text_color=TEXT, font=font_small)
+    call_sign.place(x=20, y=35)
+
+    update_btn = c.CTkButton(info_box, text="Update 🛠️", width=120, height=35,fg_color=ACCENT, hover_color="#364b87",border_color=ACCENT, border_width=1,text_color=TEXT, font=("Segoe UI", 14, "bold"))
+    update_btn.place(x=240, y=35)
+
+    # Row 1
+    dep = c.CTkEntry(info_box, placeholder_text="Departure ICAO", width=150, height=entry_h,fg_color=BG_LIGHT, border_color=ACCENT, text_color=TEXT, font=font_small)
+    dep.place(x=30, y=90)
+
+    aircraft = c.CTkEntry(info_box, placeholder_text="Aircraft", width=150, height=entry_h,fg_color=BG_LIGHT, border_color=ACCENT, text_color=TEXT, font=font_small)
+    aircraft.place(x=200, y=90)
+
+    role = c.CTkEntry(info_box, placeholder_text="Role", width=150, height=entry_h,fg_color=BG_LIGHT, border_color=ACCENT, text_color=TEXT, font=font_small)
+    role.place(x=370, y=90)
+
+    # Row 2
+    arr = c.CTkEntry(info_box, placeholder_text="Arrival ICAO", width=150, height=entry_h,fg_color=BG_LIGHT, border_color=ACCENT, text_color=TEXT, font=font_small)
+    arr.place(x=30, y=135)
+
+    cruising = c.CTkEntry(info_box, placeholder_text="Cruising Alt", width=150, height=entry_h,fg_color=BG_LIGHT, border_color=ACCENT, text_color=TEXT, font=font_small)
+    cruising.place(x=200, y=135)
+
+    initial = c.CTkEntry(info_box, placeholder_text="Initial Alt", width=150, height=entry_h,fg_color=BG_LIGHT, border_color=ACCENT, text_color=TEXT, font=font_small)
+    initial.place(x=370, y=135)
+
+    # --- Section 2: Mission Data Box ---
+    bottom_box = c.CTkFrame(planner, width=640, height=300, fg_color=BG_MID,corner_radius=15, border_width=1, border_color=ACCENT)
+    bottom_box.place(x=30, y=230)
+
+    c.CTkLabel(bottom_box, text="Mission Data", text_color="#9aa0b3",font=font_label).place(x=25, y=5)
+
+    mission_box = c.CTkTextbox(bottom_box, width=280, height=100,fg_color=BG_LIGHT, border_color=ACCENT,border_width=1, text_color=TEXT, font=font_small)
+    mission_box.place(x=25, y=30)
+
+    your_objective = c.CTkTextbox(bottom_box, width=280, height=100,fg_color=BG_LIGHT, border_color=ACCENT,border_width=1, text_color=TEXT, font=font_small)
+    your_objective.place(x=25, y=150)
+
+    notams = c.CTkTextbox(bottom_box, width=280, height=220,fg_color=BG_LIGHT, border_color=ACCENT,border_width=1, text_color=TEXT, font=font_small)
+    notams.place(x=330, y=30)
+
+    placeholders = {
+        mission_box: "mission objective",
+        your_objective: "your objective",
+        notams: "notams / notes"
+    }
+
+    for text_box, placeholder in placeholders.items():
+        text_box.insert("1.0", placeholder)
+        text_box.configure(text_color="#9aa0b3")
+
+        def on_focus_in(event, tb=text_box, ph=placeholder):
+            if tb.get("1.0", "end-1c") == ph:
+                tb.delete("1.0", "end")
+                tb.configure(text_color=TEXT)
+
+        def on_focus_out(event, tb=text_box, ph=placeholder):
+            if tb.get("1.0", "end-1c").strip() == "":
+                tb.insert("1.0", ph)
+                tb.configure(text_color="#9aa0b3")
+
+        text_box.bind("<FocusIn>", on_focus_in)
+        text_box.bind("<FocusOut>", on_focus_out)
+
+
 
 # --- Initialize ---
 flight_plan_visualizer()
