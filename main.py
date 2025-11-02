@@ -1,5 +1,5 @@
 import customtkinter as c
-import tkinter as tk
+import tkinter
 from PIL import Image, ImageDraw
 
 # --- Base Colors ---
@@ -59,6 +59,7 @@ def update_tab_styles():
 
 create_tab_button("Flight Plan", 20)
 create_tab_button("Flight Planner", 160)
+create_tab_button("Announcements", 300)
 
 # --- Flight Plan Tab ---
 def flight_plan_visualizer():
@@ -262,11 +263,91 @@ def flight_planner_tab():
         text_box.bind("<FocusIn>", on_focus_in)
         text_box.bind("<FocusOut>", on_focus_out)
 
+def warn(message):
+    """Show a small custom-styled warning window."""
+    warn_win = c.CTkToplevel(window)
+    warn_win.title("⚠ Warning")
+    warn_win.geometry("300x150+1250+400")
+    warn_win.resizable(False, False)
+    warn_win.configure(fg_color=BG_MID)
 
+    c.CTkLabel(warn_win, text="Warning", text_color="#ffcc00",
+               font=("Segoe UI", 20, "bold"), fg_color="transparent").place(x=20, y=15)
+    c.CTkLabel(warn_win, text=message, text_color=TEXT,
+               font=("Segoe UI", 14), fg_color="transparent", wraplength=260, justify="left").place(x=20, y=55)
+
+    c.CTkButton(warn_win, text="OK", width=80, height=28,
+                fg_color=ACCENT, hover_color="#364b87",
+                command=warn_win.destroy).place(x=110, y=110)
+
+
+def announcements_tab():
+    ann = c.CTkFrame(window, width=700, height=550, fg_color=BG_DARK, corner_radius=0)
+    tab_frames["Announcements"] = ann
+    ann_subjext_font = c.CTkFont("Canva Sans", size=25)
+    ann_details_font = c.CTkFont("Canva Sans", size=12)
+
+    class ann_box_ann:
+        def __init__(self, x, y, parent):
+            self.parent = parent
+            self.width, self.height = 580, 147
+            self.fg_color, self.bc, self.border_width, self.corner_radius = BG_LIGHT, ACCENT, 1, 20
+            self.subject_text, self.details_text = "Waiting for an announcement", "Stand by for details..."
+
+            # main frame
+            self.ann_box_ann = c.CTkFrame(parent, width=self.width, height=self.height,corner_radius=self.corner_radius,border_width=self.border_width, border_color=self.bc, fg_color=self.fg_color)
+            self.ann_box_ann.place(x=x, y=y)
+
+            # subject label
+            self.subject_label = c.CTkLabel(self.ann_box_ann, text=self.subject_text, font=("Segoe UI", 22, "bold"),text_color=TEXT, fg_color="transparent", anchor="w")
+            self.subject_label.place(x=15, y=8)
+
+            # category/status box (top right)
+            self.status_box = c.CTkLabel(self.ann_box_ann, text="INFO", width=100, height=30, corner_radius=10,fg_color=BG_DARK, text_color=TEXT, font=("Segoe UI", 14, "bold"),anchor="center")
+            self.status_box.place(x=self.width - 115, y=10)
+
+            self.by_who_box = c.CTkLabel(self.ann_box_ann, text=" ", width=100, height=30, corner_radius=10,fg_color=BG_DARK, text_color=TEXT, font=("Segoe UI", 14, "bold"),anchor="center")
+            self.by_who_box.place(x=self.width - 240, y=10)
+
+            # details text
+            self.details_label = c.CTkLabel(self.ann_box_ann, text=self.details_text, font=("Segoe UI", 14), text_color=TEXT, fg_color="transparent", justify="left",wraplength=self.width - 40, anchor="nw")
+            self.details_label.place(x=15, y=50)
+
+        def update(self, subject=None, details=None, status=None, by_who=None):
+            if not subject or not subject.strip():
+                warn("Subject cannot be empty.")
+                return
+            if not details or not details.strip():
+                warn("Details cannot be empty.")
+                return
+            if not by_who or not by_who.strip():
+                warn("Sender (By user) cannot be empty.")
+                return
+
+                # --- Apply updates ---
+            self.subject_label.configure(text=subject)
+            self.details_label.configure(text=details)
+            if status:  # status is optional
+                self.status_box.configure(text=status)
+            self.by_who_box.configure(text=by_who)
+
+    ann_box = c.CTkFrame(ann, width=607, height=500, fg_color=BG_DARK,border_color=ACCENT, border_width=2, corner_radius=20)
+    ann_box.place(x=73, y=31)
+
+    announcement_1 = ann_box_ann(13, 15, parent=ann_box)
+    announcement_2 = ann_box_ann(13, 177, parent=ann_box)
+    announcement_3 = ann_box_ann(13, 338, parent=ann_box)
+
+    setting_box = c.CTkFrame(ann, width=57, height=500, fg_color=BG_DARK,border_color=ACCENT, border_width=2, corner_radius=20)
+    setting_box.place(x=10, y=31)
 
 # --- Initialize ---
 flight_plan_visualizer()
 flight_planner_tab()
+announcements_tab()
+
+# Show the default tab
 show_tab("Flight Plan")
+
 
 window.mainloop()
