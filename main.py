@@ -9,11 +9,6 @@ BG_LIGHT = "#1c2a5e"
 ACCENT = "#2a3b6e"
 TEXT = "#ffffff"
 
-#/--Logo--\#
-logo_i = Image.open("logo.png").resize((317, 281))
-logo = c.CTkImage(light_image=logo_i, size=logo_i.size)
-#\--Logo--/#
-
 # --- Load Map Image ---
 map_image = Image.open("map.png").resize((635, 491)).copy()
 map_state = {
@@ -338,8 +333,22 @@ def announcements_tab():
     announcement_2 = ann_box_ann(13, 177, parent=ann_box)
     announcement_3 = ann_box_ann(13, 338, parent=ann_box)
 
-    setting_box = c.CTkFrame(ann, width=57, height=500, fg_color=BG_DARK,border_color=ACCENT, border_width=2, corner_radius=20)
+    setting_box = c.CTkFrame(ann, width=56, height=500, fg_color=BG_DARK,border_color=ACCENT, border_width=2, corner_radius=20)
     setting_box.place(x=10, y=31)
+    pinned = {"state": False}  # use dict so closure can modify
+
+    def pin():
+        pinned["state"] = not pinned["state"]
+        window.attributes("-topmost", pinned["state"])
+        pin_log.configure(text="📍" if pinned["state"] else "📌")
+
+        # --- Pin Button + Icon ---
+
+    pin_btn = c.CTkButton(setting_box, width=40, height=40, corner_radius=10,text="", fg_color=BG_LIGHT, border_color=ACCENT,hover_color=ACCENT, command=pin)
+    pin_btn.place(x=8, y=15)
+
+    pin_log = c.CTkLabel(setting_box, text="📌", fg_color=BG_LIGHT, bg_color="transparent",corner_radius=4, text_color=TEXT,font=("Segoe UI", 14, "bold"), width=30, height=30)
+    pin_log.place(x=13, y=20)
 
 # --- Initialize ---
 flight_plan_visualizer()
